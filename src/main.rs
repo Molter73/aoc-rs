@@ -1,21 +1,31 @@
 use std::fs;
 
-fn get_floor_diff(input: &str) -> Result<i32, char> {
-    let mut up_floor = 0;
-    let mut down_floor = 0;
+fn get_floor_diff(c: char) -> Result<i32, char> {
+    match c {
+        '(' => Ok(1),
+        ')' => Ok(-1),
+        c => return Err(c),
+    }
+}
 
-    for c in input.chars() {
-        match c {
-            '(' => up_floor += 1,
-            ')' => down_floor += 1,
-            c => return Err(c),
+fn get_basement(input: &str) -> Result<usize, char> {
+    let mut floor = 0;
+
+    for (i, c) in input.chars().enumerate() {
+        match get_floor_diff(c) {
+            Ok(diff) => floor += diff,
+            Err(e) => return Err(e),
+        }
+
+        if floor < 0 {
+            return Ok(i + 1);
         }
     }
-    Ok(up_floor - down_floor)
+    Err('_')
 }
 
 fn main() {
     let input = fs::read_to_string("./day1.txt").unwrap();
 
-    println!("{}", get_floor_diff(input.trim()).unwrap());
+    println!("{}", get_basement(input.trim()).unwrap());
 }
