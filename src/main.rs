@@ -3,7 +3,7 @@ use std::fs;
 use std::str::FromStr;
 
 mod building;
-use building::get_basement;
+use building::{get_final_floor, get_basement};
 
 mod gifts;
 use gifts::Gift;
@@ -18,6 +18,7 @@ fn main() {
     // Building stuff
     let input = fs::read_to_string("data/day1.txt").unwrap();
 
+    println!("final floor: {}", get_final_floor(input.trim()).unwrap());
     println!("basement reached: {}", get_basement(input.trim()).unwrap());
 
     // Gifts stuff
