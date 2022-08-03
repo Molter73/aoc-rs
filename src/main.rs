@@ -69,6 +69,6 @@ fn main() {
     println!("houses: {}", houses.len());
 
     // AdventCoins stuff
-    let miner = AdventCoins::new("yzbqklnj");
+    let miner = AdventCoins::new("yzbqklnj", "00000");
     println!("AdventCoin: {}", miner.mine());
 }
