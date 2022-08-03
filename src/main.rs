@@ -3,7 +3,7 @@ use std::fs;
 use std::str::FromStr;
 
 mod building;
-use building::{get_final_floor, get_basement};
+use building::{get_basement, get_final_floor};
 
 mod gifts;
 use gifts::Gift;
@@ -13,6 +13,8 @@ use grid::Position;
 
 mod adventcoins;
 use adventcoins::AdventCoins;
+
+mod naughtynice;
 
 fn main() {
     // Building stuff
@@ -72,4 +74,15 @@ fn main() {
     // AdventCoins stuff
     let miner = AdventCoins::new("yzbqklnj", "00000");
     println!("AdventCoin: {}", miner.mine());
+
+    // NaughtyNice stuff
+    let list = fs::read_to_string("data/day5.txt").unwrap();
+    let mut count = 0;
+
+    for line in list.lines() {
+        if naughtynice::validate(line) == naughtynice::Value::Nice {
+            count += 1;
+        }
+    }
+    println!("Nice strings: {}", count);
 }
