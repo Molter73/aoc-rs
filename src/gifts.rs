@@ -22,12 +22,31 @@ impl Gift {
         2 * (base + front + side)
     }
 
+    pub fn get_volume(&self) -> usize {
+        self.l * self.w * self.h
+    }
+
     pub fn get_smallest_side(&self) -> usize {
         let base = self.l * self.w;
         let front = self.l * self.h;
         let side = self.w * self.h;
 
         cmp::min(base, cmp::min(front, side))
+    }
+
+    pub fn get_wrap_around(&self) -> usize {
+        let around: Vec<usize> = vec![
+            (2 * self.l) + (2 * self.w),
+            (2 * self.l) + (2 * self.h),
+            (2 * self.h) + (2 * self.w),
+        ];
+
+        let min_dist = around.iter().min();
+
+        match min_dist {
+            Some(d) => *d,
+            None => 0,
+        }
     }
 }
 

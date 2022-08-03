@@ -37,14 +37,25 @@ fn main() {
     // Gifts stuff
     let gifts = fs::read_to_string("./day2.txt").unwrap();
     let mut wrapper: usize = 0;
+    let mut ribbon: usize = 0;
 
     for line in gifts.lines() {
         let gift = Gift::from_str(line).unwrap();
+
+        // Calculate required wrapper
         let area = gift.get_area();
         let smallest = gift.get_smallest_side();
 
         wrapper += area;
         wrapper += smallest;
+
+        // Calculate required ribbon
+        let volume = gift.get_volume();
+        let wrap_around = gift.get_wrap_around();
+
+        ribbon += volume;
+        ribbon += wrap_around
     }
-    println!("{}", wrapper);
+    println!("wrapper: {}", wrapper);
+    println!("ribbon: {}", ribbon);
 }
