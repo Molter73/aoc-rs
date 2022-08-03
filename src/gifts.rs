@@ -26,11 +26,7 @@ impl Gift {
     }
 
     pub fn get_smallest_side(&self) -> usize {
-        let areas = vec![
-            self.l * self.w,
-            self.l * self.h,
-            self.w * self.h
-        ];
+        let areas = vec![self.l * self.w, self.l * self.h, self.w * self.h];
 
         let min_area = areas.iter().min();
 
