@@ -1,4 +1,3 @@
-use std::cmp;
 use std::fmt::Display;
 use std::num::ParseIntError;
 use std::str::FromStr;
@@ -27,21 +26,28 @@ impl Gift {
     }
 
     pub fn get_smallest_side(&self) -> usize {
-        let base = self.l * self.w;
-        let front = self.l * self.h;
-        let side = self.w * self.h;
+        let areas = vec![
+            self.l * self.w,
+            self.l * self.h,
+            self.w * self.h
+        ];
 
-        cmp::min(base, cmp::min(front, side))
+        let min_area = areas.iter().min();
+
+        match min_area {
+            Some(a) => *a,
+            None => 0,
+        }
     }
 
     pub fn get_wrap_around(&self) -> usize {
-        let around: Vec<usize> = vec![
+        let perimeters: Vec<usize> = vec![
             (2 * self.l) + (2 * self.w),
             (2 * self.l) + (2 * self.h),
             (2 * self.h) + (2 * self.w),
         ];
 
-        let min_dist = around.iter().min();
+        let min_dist = perimeters.iter().min();
 
         match min_dist {
             Some(d) => *d,
