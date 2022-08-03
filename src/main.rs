@@ -11,6 +11,9 @@ use gifts::Gift;
 mod grid;
 use grid::Position;
 
+mod adventcoins;
+use adventcoins::AdventCoins;
+
 fn main() {
     // Building stuff
     let input = fs::read_to_string("data/day1.txt").unwrap();
@@ -64,4 +67,8 @@ fn main() {
         houses.insert(*santa);
     }
     println!("houses: {}", houses.len());
+
+    // AdventCoins stuff
+    let miner = AdventCoins::new("yzbqklnj");
+    println!("AdventCoin: {}", miner.mine());
 }
