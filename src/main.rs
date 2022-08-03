@@ -44,17 +44,24 @@ fn main() {
 
     // Grid stuff
     let travel = fs::read_to_string("data/day3.txt").unwrap();
-    let mut position = Position::new(0, 0);
+    let mut santa = Position::new(0, 0);
+    let mut robo_santa = Position::new(0, 0);
     let mut houses = HashSet::new();
 
-    houses.insert(position);
+    houses.insert(santa);
 
-    for c in travel.trim().chars() {
-        if let Err(c) = position.update(c) {
+    for (i, c) in travel.trim().chars().enumerate() {
+        let santa: &mut Position = if i % 2 == 0 {
+            &mut santa
+        } else {
+            &mut robo_santa
+        };
+
+        if let Err(c) = santa.update(c) {
             println!("Failed to parse {}", c);
             continue;
         }
-        houses.insert(position);
+        houses.insert(*santa);
     }
     println!("houses: {}", houses.len());
 }
