@@ -4,31 +4,32 @@ pub enum Value {
     Naughty,
 }
 
-const VOWELS: &str = "aeiou";
-const FORBIDDEN_COMBINATIONS: &'static [&'static str] = &["ab", "cd", "pq", "xy"];
+fn validate_pairs(input: &str) -> bool {
+    for (i, _) in input[..input.len() - 2].chars().enumerate() {
+        let letters = &input[i..i + 2];
 
-pub fn validate(input: &str) -> Value {
-    let mut vowels = 0;
-    let mut repeats_letter = false;
-
-    for fc in FORBIDDEN_COMBINATIONS {
-        if input.contains(fc) {
-            return Value::Naughty;
+        if input[i + 2..].contains(letters) {
+            return true;
         }
     }
+    false
+}
 
-    for (i, c) in input.chars().enumerate() {
-        if VOWELS.contains(c) {
-            vowels += if vowels < 3 { 1 } else { 0 };
+fn validate_palindrome(input: &str) -> bool {
+    for (i, c) in input[..input.len() - 2].chars().enumerate() {
+        if c == input.as_bytes()[i + 2] as char {
+            return true;
         }
+    }
+    false
+}
 
-        if i < input.len() - 1 && c == input.as_bytes()[i + 1] as char {
-            repeats_letter = true;
-        }
+pub fn validate(input: &str) -> Value {
+    let pairs = validate_pairs(input);
+    let palindrome = validate_palindrome(input);
 
-        if vowels >= 3 && repeats_letter {
-            return Value::Nice;
-        }
+    if pairs && palindrome {
+        return Value::Nice;
     }
     Value::Naughty
 }
@@ -39,19 +40,20 @@ mod tests {
 
     #[test]
     fn test_validation() {
-        let input = "ugknbfddgicrmopn";
-        assert_eq!(Value::Nice, validate(input));
+        let input = "qjhvhtzxzqqjkmpb";
+        let result = validate(input);
+        assert_eq!(Value::Nice, result);
 
-        let input = "aaa";
-        assert_eq!(Value::Nice, validate(input));
+        let input = "xxyxx";
+        let result = validate(input);
+        assert_eq!(Value::Nice, result);
 
-        let input = "jchzalrnumimnmhp";
-        assert_eq!(Value::Naughty, validate(input));
+        let input = "uurcxstgmygtbstg";
+        let result = validate(input);
+        assert_eq!(Value::Naughty, result);
 
-        let input = "haegwjzuvuyypxyu";
-        assert_eq!(Value::Naughty, validate(input));
-
-        let input = "dvszwmarrgswjxmb";
-        assert_eq!(Value::Naughty, validate(input));
+        let input = "ieodomkazucvgmuy";
+        let result = validate(input);
+        assert_eq!(Value::Naughty, result);
     }
 }
