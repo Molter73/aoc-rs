@@ -16,6 +16,9 @@ use adventcoins::AdventCoins;
 
 mod naughtynice;
 
+mod lights;
+use lights::Grid;
+
 fn main() {
     // Building stuff
     let input = fs::read_to_string("data/day1.txt").unwrap();
@@ -85,4 +88,10 @@ fn main() {
         }
     }
     println!("Nice strings: {}", count);
+
+    // Light grid stuff
+    let input = fs::read_to_string("data/day6.txt").unwrap();
+    let mut grid = Grid::new(1000, 1000);
+    grid.process(&input);
+    println!("lights on: {}", grid.count());
 }
