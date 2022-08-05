@@ -1,3 +1,5 @@
+use std::usize;
+
 enum Instruction {
     Turn(bool, Range),
     Toggle(Range),
@@ -39,12 +41,12 @@ enum GridError {
 }
 
 pub struct Grid {
-    lights: Vec<Vec<bool>>,
+    lights: Vec<Vec<u64>>,
 }
 
 impl Grid {
     pub fn new(x: usize, y: usize) -> Grid {
-        let lights = vec![vec![false; x]; y];
+        let lights = vec![vec![0; x]; y];
 
         Grid { lights }
     }
@@ -55,8 +57,14 @@ impl Grid {
         }
 
         match input[1] {
-            "on" => Ok(Instruction::Turn(true, Range::new(input[2], input[3], input[4])?)),
-            "off" => Ok(Instruction::Turn(false, Range::new(input[2], input[3], input[4])?)),
+            "on" => Ok(Instruction::Turn(
+                true,
+                Range::new(input[2], input[3], input[4])?,
+            )),
+            "off" => Ok(Instruction::Turn(
+                false,
+                Range::new(input[2], input[3], input[4])?,
+            )),
             _ => Err(GridError::InvalidInstruction),
         }
     }
@@ -66,7 +74,9 @@ impl Grid {
             return Err(GridError::SizeLengthError);
         }
 
-        Ok(Instruction::Toggle(Range::new(input[1], input[2], input[3])?))
+        Ok(Instruction::Toggle(Range::new(
+            input[1], input[2], input[3],
+        )?))
     }
 
     fn parse(input: &str) -> Result<Instruction, GridError> {
@@ -82,7 +92,11 @@ impl Grid {
     fn turn(&mut self, v: bool, r: Range) {
         for row in self.lights[r.y.0..=r.y.1].iter_mut() {
             for light in row[r.x.0..=r.x.1].iter_mut() {
-                *light = v;
+                if v {
+                    *light += 1;
+                } else if *light > 0 {
+                    *light -= 1;
+                }
             }
         }
     }
@@ -90,7 +104,7 @@ impl Grid {
     fn toggle(&mut self, r: Range) {
         for row in self.lights[r.y.0..=r.y.1].iter_mut() {
             for light in row[r.x.0..=r.x.1].iter_mut() {
-                *light = !*light;
+                *light += 2;
             }
         }
     }
@@ -107,12 +121,10 @@ impl Grid {
     }
 
     pub fn count(&self) -> usize {
-        let mut c = 0;
+        let mut c: usize = 0;
         for row in &self.lights {
             for light in row {
-                if *light {
-                    c += 1;
-                }
+                c += *light as usize;
             }
         }
         c
