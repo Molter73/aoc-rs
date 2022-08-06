@@ -19,6 +19,9 @@ mod naughtynice;
 mod lights;
 use lights::Grid;
 
+mod circuit;
+use circuit::Circuit;
+
 fn main() {
     // Building stuff
     let input = fs::read_to_string("data/day1.txt").unwrap();
@@ -94,4 +97,11 @@ fn main() {
     let mut grid = Grid::new(1000, 1000);
     grid.process(&input);
     println!("lights on: {}", grid.count());
+
+    // Circuit stuff
+    let input = fs::read_to_string("data/day7.txt").unwrap();
+    let mut circuit = Circuit::new();
+    circuit.assemble(input.trim().lines().collect());
+
+    println!("a: {}", circuit.get_wire("a".to_string()));
 }
