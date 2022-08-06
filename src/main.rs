@@ -103,5 +103,13 @@ fn main() {
     let mut circuit = Circuit::new();
     circuit.assemble(input.trim().lines().collect());
 
-    println!("a: {}", circuit.get_wire("a".to_string()));
+    let a = circuit.get_wire("a".to_string());
+    println!("a: {}", a);
+
+    circuit.reset();
+    circuit.set_wire("b".to_string(), a);
+    circuit.assemble(input.trim().lines().collect());
+
+    let a = circuit.get_wire("a".to_string());
+    println!("a2: {}", a);
 }

@@ -16,6 +16,18 @@ impl Circuit {
         Circuit { wires }
     }
 
+    pub fn reset(&mut self) {
+        self.wires.clear();
+    }
+
+    pub fn set_wire(&mut self, wire: String, signal: u16) {
+        self.wires.insert(wire, signal);
+    }
+
+    pub fn get_wire(&self, r: String) -> u16 {
+        self.wires[&r]
+    }
+
     pub fn assemble(&mut self, input: Vec<&str>) {
         let mut q = VecDeque::from_iter(input);
         let mut start_elements = q.len();
@@ -35,7 +47,12 @@ impl Circuit {
                 },
                 Ok(op) => {
                     match op {
-                        Operation::Assignment(reg, value) => self.wires.insert(reg, value),
+                        Operation::Assignment(reg, value) => {
+                            if self.wires.get(&reg).is_some() {
+                                continue;
+                            }
+                            self.wires.insert(reg, value)
+                        },
                         Operation::Not(reg, value) => self.wires.insert(reg, !value),
                         Operation::And(reg, x, y) => self.wires.insert(reg, x & y),
                         Operation::Or(reg, x, y) => self.wires.insert(reg, x | y),
@@ -114,10 +131,6 @@ impl Circuit {
             }
             _ => Err(CircuitError::InvalidOperation(op.join(" "))),
         }
-    }
-
-    pub fn get_wire(&self, r: String) -> u16 {
-        self.wires[&r]
     }
 }
 
