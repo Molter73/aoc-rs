@@ -52,7 +52,7 @@ impl Circuit {
                                 continue;
                             }
                             self.wires.insert(reg, value)
-                        },
+                        }
                         Operation::Not(reg, value) => self.wires.insert(reg, !value),
                         Operation::And(reg, x, y) => self.wires.insert(reg, x & y),
                         Operation::Or(reg, x, y) => self.wires.insert(reg, x | y),

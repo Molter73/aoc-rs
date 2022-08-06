@@ -22,6 +22,8 @@ use lights::Grid;
 mod circuit;
 use circuit::Circuit;
 
+mod list;
+
 fn main() {
     // Building stuff
     let input = fs::read_to_string("data/day1.txt").unwrap();
@@ -112,4 +114,13 @@ fn main() {
 
     let a = circuit.get_wire("a".to_string());
     println!("a2: {}", a);
+
+    // Presents list stuff
+    let input = fs::read_to_string("data/day8.txt").unwrap();
+    let mut acc: usize = 0;
+
+    for i in input.trim().lines() {
+        acc += list::diff(i.as_bytes());
+    }
+    println!("diff: {}", acc);
 }
