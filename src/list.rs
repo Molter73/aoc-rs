@@ -42,18 +42,43 @@ fn decode(input: &[u8]) -> Vec<u8> {
     output
 }
 
+fn encode(input: &[u8]) -> Vec<u8> {
+    let mut output: Vec<u8> = vec![b'\"'];
+
+    for c in input.iter() {
+        match c {
+            b'\\' => {
+                output.push(b'\\');
+                output.push(b'\\');
+            }
+            b'\"' => {
+                output.push(b'\\');
+                output.push(b'\"');
+            }
+            ch => output.push(*ch),
+        }
+    }
+    output.push(b'\"');
+
+    output
+}
+
 fn hex_to_ascii(hex: u8) -> u8 {
-    if hex >= b'0' && hex <= b'9' {
+    if (b'0'..=b'9').contains(&hex) {
         hex - b'0'
     } else {
         hex - b'a'
     }
 }
 
-pub fn diff(input: &[u8]) -> usize {
-    let d = decode(input);
+pub fn diff(dec: bool, input: &[u8]) -> usize {
+    let d = if dec {
+        decode(input)
+    } else {
+        encode(input)
+    };
 
-    input.len() - d.len()
+    input.len().abs_diff(d.len())
 }
 
 #[cfg(test)]
@@ -61,24 +86,47 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_list() {
+    fn test_decode() {
         let input: &[u8] = br#""""#;
-        let len = diff(input);
+        let len = diff(true, input);
 
         assert_eq!(2, len);
 
         let input: &[u8] = br#""abc""#;
-        let len = diff(input);
+        let len = diff(true, input);
 
         assert_eq!(2, len);
 
         let input: &[u8] = br#""aaa\"aaa""#;
-        let len = diff(input);
+        let len = diff(true, input);
 
         assert_eq!(3, len);
 
         let input: &[u8] = br#""\x27""#;
-        let len = diff(input);
+        let len = diff(true, input);
+
+        assert_eq!(5, len);
+    }
+
+    #[test]
+    fn test_encode() {
+        let input: &[u8] = br#""""#;
+        let len = diff(false, input);
+
+        assert_eq!(4, len);
+
+        let input: &[u8] = br#""abc""#;
+        let len = diff(false, input);
+
+        assert_eq!(4, len);
+
+        let input: &[u8] = br#""aaa\"aaa""#;
+        let len = diff(false, input);
+
+        assert_eq!(6, len);
+
+        let input: &[u8] = br#""\x27""#;
+        let len = diff(false, input);
 
         assert_eq!(5, len);
     }

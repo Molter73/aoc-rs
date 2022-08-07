@@ -120,7 +120,14 @@ fn main() {
     let mut acc: usize = 0;
 
     for i in input.trim().lines() {
-        acc += list::diff(i.as_bytes());
+        acc += list::diff(true, i.as_bytes());
     }
-    println!("diff: {}", acc);
+    println!("decode: {}", acc);
+
+    let mut acc: usize = 0;
+
+    for i in input.trim().lines() {
+        acc += list::diff(false, i.as_bytes());
+    }
+    println!("encode: {}", acc);
 }
