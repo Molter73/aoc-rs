@@ -27,6 +27,8 @@ mod list;
 mod path;
 use path::{find_longest_path, find_shortest_path};
 
+mod look_and_say;
+
 fn main() {
     // Building stuff
     let input = fs::read_to_string("data/day1.txt").unwrap();
@@ -138,4 +140,8 @@ fn main() {
     let input = fs::read_to_string("data/day9.txt").unwrap();
     println!("shortest distance: {}", find_shortest_path(&input));
     println!("longest distance: {}", find_longest_path(&input));
+
+    // Look and say stuff
+    let input = String::from("1113122113");
+    println!("Final length: {}", look_and_say::process(input));
 }
