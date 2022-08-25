@@ -72,11 +72,7 @@ fn hex_to_ascii(hex: u8) -> u8 {
 }
 
 pub fn diff(dec: bool, input: &[u8]) -> usize {
-    let d = if dec {
-        decode(input)
-    } else {
-        encode(input)
-    };
+    let d = if dec { decode(input) } else { encode(input) };
 
     input.len().abs_diff(d.len())
 }

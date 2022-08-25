@@ -24,6 +24,9 @@ use circuit::Circuit;
 
 mod list;
 
+mod path;
+use path::find_shortest_path;
+
 fn main() {
     // Building stuff
     let input = fs::read_to_string("data/day1.txt").unwrap();
@@ -130,4 +133,8 @@ fn main() {
         acc += list::diff(false, i.as_bytes());
     }
     println!("encode: {}", acc);
+
+    // Shortest path stuff
+    let input = fs::read_to_string("data/day9.txt").unwrap();
+    println!("shortest distance: {}", find_shortest_path(&input));
 }
