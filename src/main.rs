@@ -148,6 +148,10 @@ fn main() {
 
     // Password stuff
     let mut input: Vec<u8> = "hepxcrrq".bytes().collect();
+
+    password::get_next_pass(&mut input);
+    println!("new pass is: {}", std::str::from_utf8(&input).unwrap());
+
     password::get_next_pass(&mut input);
     println!("new pass is: {}", std::str::from_utf8(&input).unwrap());
 }
