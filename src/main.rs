@@ -25,7 +25,7 @@ use circuit::Circuit;
 mod list;
 
 mod path;
-use path::find_shortest_path;
+use path::{find_longest_path, find_shortest_path};
 
 fn main() {
     // Building stuff
@@ -134,7 +134,8 @@ fn main() {
     }
     println!("encode: {}", acc);
 
-    // Shortest path stuff
+    // Shortest/Longest path stuff
     let input = fs::read_to_string("data/day9.txt").unwrap();
     println!("shortest distance: {}", find_shortest_path(&input));
+    println!("longest distance: {}", find_longest_path(&input));
 }
