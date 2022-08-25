@@ -28,6 +28,7 @@ mod path;
 use path::{find_longest_path, find_shortest_path};
 
 mod look_and_say;
+mod password;
 
 fn main() {
     // Building stuff
@@ -144,4 +145,9 @@ fn main() {
     // Look and say stuff
     let input = String::from("1113122113");
     println!("Final length: {}", look_and_say::process(input));
+
+    // Password stuff
+    let mut input: Vec<u8> = "hepxcrrq".bytes().collect();
+    password::get_next_pass(&mut input);
+    println!("new pass is: {}", std::str::from_utf8(&input).unwrap());
 }
