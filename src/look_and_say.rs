@@ -27,7 +27,7 @@ fn process_once(input: String) -> String {
 pub fn process(input: String) -> usize {
     let mut s = input;
 
-    for _ in 0..40 {
+    for _ in 0..50 {
         s = process_once(s);
     }
     s.len()
