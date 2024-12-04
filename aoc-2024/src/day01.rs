@@ -1,10 +1,13 @@
-fn main() {
+use std::{error::Error, fmt::Display};
+
+fn main() -> Result<(), Box<dyn Error>> {
     let mut args = std::env::args();
     let path = args.nth(1).unwrap();
     let input = std::fs::read_to_string(path).unwrap();
-    let lists = Lists::try_from(input.as_str()).unwrap();
+    let lists = Lists::try_from(input.as_str())?;
     println!("Distance is: {}", lists.get_distance());
     println!("Similarity is: {}", lists.get_similarity());
+    Ok(())
 }
 
 // Holds the two lists of place IDs
@@ -33,8 +36,29 @@ impl Lists {
     }
 }
 
+#[derive(Debug)]
+enum ListsError {
+    ParseError(String),
+}
+
+impl Display for ListsError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ListsError::ParseError(e) => write!(f, "{e}"),
+        }
+    }
+}
+
+impl From<std::num::ParseIntError> for ListsError {
+    fn from(value: std::num::ParseIntError) -> Self {
+        ListsError::ParseError(value.to_string())
+    }
+}
+
+impl Error for ListsError {}
+
 impl TryFrom<&str> for Lists {
-    type Error = String;
+    type Error = ListsError;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let mut left = Vec::new();
@@ -43,20 +67,16 @@ impl TryFrom<&str> for Lists {
             for elem in line.split_whitespace().enumerate() {
                 match elem {
                     (0, v) => {
-                        let v = match v.parse::<u64>() {
-                            Ok(v) => v,
-                            Err(e) => return Err(format!("{e}")),
-                        };
+                        let v = v.parse::<u64>()?;
                         left.push(v);
                     }
                     (1, v) => {
-                        let v = match v.parse::<u64>() {
-                            Ok(v) => v,
-                            Err(e) => return Err(format!("{e}")),
-                        };
+                        let v = v.parse::<u64>()?;
                         right.push(v);
                     }
-                    (i, v) => return Err(format!("Invalid input: ({i}) {v}")),
+                    (i, v) => {
+                        return Err(ListsError::ParseError(format!("Invalid input: ({i}) {v}")))
+                    }
                 }
             }
         }

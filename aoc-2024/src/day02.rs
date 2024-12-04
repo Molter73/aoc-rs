@@ -48,7 +48,7 @@ impl Report {
     fn failure(&self) -> Option<isize> {
         let is_increasing = self.levels[0] < self.levels[1];
         for (idx, (i, j)) in self.levels.iter().zip(self.levels[1..].iter()).enumerate() {
-            if i.abs_diff(*j) > 3 || i == j {
+            if i == j || i.abs_diff(*j) > 3 {
                 return Some(idx as isize);
             }
 

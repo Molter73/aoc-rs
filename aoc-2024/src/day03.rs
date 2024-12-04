@@ -53,58 +53,41 @@ impl Iterator for Lexer<'_> {
                 ',' => Some(Token::Comma),
                 d if d.is_ascii_digit() => {
                     let mut num = String::from(d);
-                    while let Some(c) = self.input.peek() {
-                        if !c.is_ascii_digit() {
-                            break;
-                        }
-
-                        num.push(*c);
-                        self.input.next();
+                    while let Some(c) = self.input.next_if(|c| c.is_ascii_digit()) {
+                        num.push(c);
                     }
                     let num = num.parse::<i64>().unwrap();
                     Some(Token::Int(num))
                 }
                 'd' => {
-                    if self.input.peek() != Some(&'o') {
+                    if self.input.next_if(|c| *c == 'o').is_none() {
                         return Some(Token::Invalid);
                     }
-                    self.input.next();
 
-                    match self.input.peek() {
-                        Some(&'n') => {}
-                        _ => return Some(Token::Do),
+                    if self.input.next_if(|c| *c == 'n').is_none() {
+                        return Some(Token::Do);
                     }
-                    self.input.next();
 
-                    if self.input.peek() != Some(&'\'') {
+                    if self.input.next_if(|c| *c == '\'').is_none() {
                         return Some(Token::Invalid);
                     }
-                    self.input.next();
 
-                    if self.input.peek() != Some(&'t') {
+                    if self.input.next_if(|c| *c == 't').is_none() {
                         return Some(Token::Invalid);
                     }
-                    self.input.next();
 
                     Some(Token::Dont)
                 }
                 'm' => {
-                    match self.input.peek() {
-                        Some('u') => {
-                            self.input.next();
-                            match self.input.peek() {
-                                Some('l') => {
-                                    // advance the iterator
-                                    self.input.next();
-                                    Some(Token::Mul)
-                                }
-                                Some(_) => Some(Token::Invalid),
-                                None => None,
-                            }
-                        }
-                        Some(_) => Some(Token::Invalid),
-                        None => None,
+                    if self.input.next_if(|c| *c == 'u').is_none() {
+                        return Some(Token::Invalid);
                     }
+
+                    if self.input.next_if(|c| *c == 'l').is_none() {
+                        return Some(Token::Invalid);
+                    }
+
+                    Some(Token::Mul)
                 }
                 _ => Some(Token::Invalid),
             },
@@ -130,10 +113,7 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_call(&mut self) -> Option<Params> {
-        if self.lexer.peek() != Some(&Token::LParen) {
-            return None;
-        }
-        self.lexer.next();
+        self.lexer.next_if(|t| t == &Token::LParen)?;
 
         let mut params = Vec::new();
         while let Some(token) = self.lexer.peek() {
