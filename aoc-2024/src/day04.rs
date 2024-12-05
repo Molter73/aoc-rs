@@ -126,13 +126,8 @@ impl LetterSoup {
                                 let xdir = Direction(-dir.0, dir.1);
                                 let xpos = curr.0 + if xdir.0 < 0 { len } else { -len };
                                 let xcurr = Position(xpos, curr.1);
-                                let new_curr_found = self
-                                    .positions
-                                    .first()
-                                    .unwrap()
-                                    .iter()
-                                    .find(|e| **e == xcurr)
-                                    .is_some();
+                                let new_curr_found =
+                                    self.positions.first().unwrap().iter().any(|e| *e == xcurr);
                                 if new_curr_found
                                     && LetterSoup::count_word_inner(&xcurr, tail, Some(&xdir)) != 0
                                 {
@@ -143,13 +138,8 @@ impl LetterSoup {
                                 let ydir = Direction(dir.0, -dir.1);
                                 let ypos = curr.1 + if ydir.1 < 0 { len } else { -len };
                                 let ycurr = Position(curr.0, ypos);
-                                let new_curr_found = self
-                                    .positions
-                                    .first()
-                                    .unwrap()
-                                    .iter()
-                                    .find(|e| **e == ycurr)
-                                    .is_some();
+                                let new_curr_found =
+                                    self.positions.first().unwrap().iter().any(|e| *e == ycurr);
                                 if new_curr_found
                                     && LetterSoup::count_word_inner(&ycurr, tail, Some(&ydir)) != 0
                                 {
