@@ -20,56 +20,14 @@ struct Manual {
 
 impl Manual {
     fn is_valid(&self, page: &[u64]) -> bool {
-        let (first, tail) = match page.split_first() {
-            Some(t) => t,
-            None => return true,
-        };
-
-        if !self.is_valid_forward(*first, tail) {
-            return false;
-        }
-
-        let rev = page.iter().cloned().rev().collect::<Vec<_>>();
-        let (first, tail) = match rev.split_first() {
-            Some(t) => t,
-            None => return true,
-        };
-        self.is_valid_backwards(*first, tail)
+        page.iter().is_sorted_by(|a, b| match self.cmp(a, b) {
+            Ordering::Equal | Ordering::Less => true,
+            Ordering::Greater => false,
+        })
     }
 
-    fn is_valid_forward(&self, first: u64, tail: &[u64]) -> bool {
-        if tail.iter().any(|i| match self.rules.get(i) {
-            Some(s) => s.contains(&first),
-            None => false,
-        }) {
-            false
-        } else {
-            let (first, tail) = match tail.split_first() {
-                Some(t) => t,
-                None => return true,
-            };
-            self.is_valid_forward(*first, tail)
-        }
-    }
-
-    fn is_valid_backwards(&self, first: u64, tail: &[u64]) -> bool {
-        if tail.iter().any(|i| match self.rules.get(&first) {
-            Some(s) => s.contains(i),
-            None => false,
-        }) {
-            false
-        } else {
-            let (first, tail) = match tail.split_first() {
-                Some(t) => t,
-                None => return true,
-            };
-            self.is_valid_backwards(*first, tail)
-        }
-    }
-
-    fn fix_line(&self, line: &[u64]) -> Vec<u64> {
-        let mut res = line.to_vec();
-        res.sort_by(|a, b| match self.rules.get(b) {
+    fn cmp(&self, a: &u64, b: &u64) -> Ordering {
+        match self.rules.get(b) {
             Some(set) => {
                 if set.contains(a) {
                     Ordering::Greater
@@ -87,7 +45,12 @@ impl Manual {
                 }
                 None => Ordering::Equal,
             },
-        });
+        }
+    }
+
+    fn fix_line(&self, line: &[u64]) -> Vec<u64> {
+        let mut res = line.to_vec();
+        res.sort_by(|a, b| self.cmp(a, b));
         res
     }
 
