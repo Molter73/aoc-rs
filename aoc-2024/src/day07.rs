@@ -7,9 +7,10 @@ fn main() {
 }
 
 fn process(calibrations: &[Calibration]) -> i64 {
+    let mut cache = OperatorCache::new();
     calibrations
         .iter()
-        .filter(|c| c.is_valid())
+        .filter(|c| c.is_valid(&mut cache))
         .fold(0, |acc, c| acc + c.res)
 }
 
@@ -38,34 +39,59 @@ impl Operator {
     }
 }
 
+type OperatorChain = Vec<Operator>;
+type OperatorPermutation = Vec<OperatorChain>;
+
+struct OperatorCache {
+    cache: Vec<OperatorPermutation>,
+}
+
+impl OperatorCache {
+    fn new() -> Self {
+        let cache = vec![vec![
+            vec![Operator::Add],
+            vec![Operator::Multiply],
+            vec![Operator::Concat],
+        ]];
+        OperatorCache { cache }
+    }
+
+    fn get(&mut self, n: usize) -> &OperatorPermutation {
+        if n >= self.cache.len() {
+            let operators_base = [Operator::Add, Operator::Multiply, Operator::Concat];
+            // Get a permutation of operators
+            for _ in self.cache.len()..=n {
+                let operator_permutation = self.cache.last().unwrap();
+                let new_permutation = operators_base
+                    .iter()
+                    .flat_map(|base| {
+                        operator_permutation
+                            .iter()
+                            .map(|op| {
+                                let mut op = op.clone();
+                                op.push(base.clone());
+                                op
+                            })
+                            .collect::<Vec<_>>()
+                    })
+                    .collect();
+                self.cache.push(new_permutation);
+            }
+        }
+        &self.cache[n]
+    }
+}
+
 struct Calibration {
     res: i64,
     operands: Vec<i64>,
 }
 
 impl Calibration {
-    fn is_valid(&self) -> bool {
-        let len = self.operands.len() - 2;
-        let operators_base = [Operator::Add, Operator::Multiply, Operator::Concat];
-        let mut operators: Vec<_> = operators_base.iter().map(|op| vec![op.clone()]).collect();
-
-        // Get a permutation of operators
-        for _ in 0..len {
-            operators = operators_base
-                .iter()
-                .flat_map(|base| {
-                    operators
-                        .iter()
-                        .map(|op| {
-                            let mut op = op.clone();
-                            op.push(base.clone());
-                            op
-                        })
-                        .collect::<Vec<_>>()
-                })
-                .collect();
-        }
-
+    fn is_valid(&self, cache: &mut OperatorCache) -> bool {
+        // -1 because there's always 1 operator less than operands.
+        // -1 because the cache starts at 0, which would be 2 operands.
+        let operators = cache.get(self.operands.len() - 2);
         operators.iter().any(|ops| {
             let res = self
                 .operands
@@ -103,8 +129,9 @@ mod tests {
         let res = 3267;
         let operands = [81, 40, 27];
 
+        let mut cache = OperatorCache::new();
         let calibration = Calibration::from(input);
-        calibration.is_valid();
+        calibration.is_valid(&mut cache);
         assert_eq!(calibration.res, res);
         assert_eq!(calibration.operands, operands);
     }
@@ -122,8 +149,14 @@ mod tests {
 292: 11 6 16 20
 "#;
         let expected = [true, true, false, true, true, false, true, false, true];
+
+        let mut cache = OperatorCache::new();
         for (i, calibration) in input.lines().map(Calibration::from).enumerate() {
-            assert_eq!(calibration.is_valid(), expected[i], "Failed on {i}");
+            assert_eq!(
+                calibration.is_valid(&mut cache),
+                expected[i],
+                "Failed on {i}"
+            );
         }
     }
 
