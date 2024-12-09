@@ -134,12 +134,8 @@ impl Lab {
         let count = self
             .floor
             .iter()
-            .map(|line| {
-                line.iter()
-                    .filter(|tile| matches!(tile, Tile::WalkedOn(_)))
-                    .count()
-            })
-            .sum();
+            .flat_map(|line| line.iter().filter(|tile| matches!(tile, Tile::WalkedOn(_))))
+            .count();
         Some(count)
     }
 
@@ -148,20 +144,17 @@ impl Lab {
         self.floor
             .iter()
             .enumerate()
-            .map(|(i, line)| {
-                line.iter()
-                    .enumerate()
-                    .filter(|(j, tile)| {
-                        let mut lab = self.clone();
-                        if matches!(tile, Tile::Obstacle) || (i == x as usize && *j == y as usize) {
-                            return false;
-                        }
-                        lab.floor[i][*j] = Tile::Obstacle;
-                        lab.simulate().is_none()
-                    })
-                    .count()
+            .flat_map(|(i, line)| {
+                line.iter().enumerate().filter(move |(j, tile)| {
+                    let mut lab = self.clone();
+                    if matches!(tile, Tile::Obstacle) || (i == x as usize && *j == y as usize) {
+                        return false;
+                    }
+                    lab.floor[i][*j] = Tile::Obstacle;
+                    lab.simulate().is_none()
+                })
             })
-            .sum()
+            .count()
     }
 
     fn guard_left(x: i64, y: i64, floor: &[Vec<Tile>]) -> bool {
